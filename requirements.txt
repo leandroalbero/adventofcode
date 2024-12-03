@@ -1,3 +1,5 @@
 regex
 ruff
 mypy
+colorama
+types-colorama
