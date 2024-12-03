@@ -53,19 +53,21 @@ class Problem(abc.ABC):
 
     def check_solutions(self) -> None:
         if not self.solutions:
-            print("No solutions loaded")
-            return
+            print("No solutions available, running without verification.")
 
         for part in (1, 2):
             run_func = self.run if part == 1 else self.run_part2
-            expected = self.solutions[f'part_{part}']
             try:
                 actual = run_func()
+                if not self.solutions:
+                    print(f"Part {part}: {actual}")
+                    continue
+
+                expected = self.solutions[f'part_{part}']
                 passed = actual == expected
                 result = f"Part {part}: {'✅' if passed else '❌'} {actual}"
                 if not passed:
                     result += f" (expected: {expected})"
+                print(result)
             except Exception as e:
-                result = f"Part {part}: ❌ Error occurred: {e}"
-
-            print(result)
+                print(f"Part {part}: ❌ Error occurred: {e}")
