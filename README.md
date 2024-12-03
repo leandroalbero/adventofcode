@@ -4,8 +4,6 @@ This repository contains my solutions for the Advent of Code challenges.
 ## How to use
 Just run `make check-problems` to check all problems for the current year.
 ```shell
-Checking all problems for year 2024
-
 Checking Day 1...
 Part 1: ✅ 1938424
 Part 2: ✅ 22014209
@@ -35,9 +33,9 @@ The repository is structured as follows:
 │   │   ├── day1-intro
 │   ├── docs            # Description of each of the problems
 │   │   ├── day1.md
-│   │   └── template.py
 │   ├── solutions       # Solutions for each problem
 │   │   ├── day1.py
+│   │   └── template.py
 │   └── solutions.csv   # CSV file with all the values of the solutions
 ├── Makefile
 ├── README.md
