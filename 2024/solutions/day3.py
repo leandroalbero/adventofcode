@@ -8,41 +8,11 @@ class Day3(Problem):
         super().__init__(2024, 3, "Day 3", load_example)
 
     def run(self) -> int:
-        def extract_operation(line: str) -> str | None:
-            start_point = line.find("mul(")
-            if start_point != -1:
-                for char in line[start_point + 4:]:
-                    if char not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ",", ")"]:
-                        return extract_operation(line[start_point + 4:])
-                    if char == ")":
-                        end_point = line[start_point:].find(")") + start_point
-                        return line[start_point:end_point + 1]
-            return None
-
-        total_sum = 0
-        for line in self.data:
-            memory = []
-            while True:
-                operation = extract_operation(line)
-                if operation:
-                    memory.append(operation)
-                    line = line.replace(operation, "")
-                else:
-                    break
-            sum = 0
-            for operation in memory:
-                operation = operation.replace("mul(", "")
-                operation = operation.replace(")", "")
-                first_operand, second_operand = operation.split(",")
-                sum += int(first_operand) * int(second_operand)
-
-            total_sum += sum
-        return total_sum
+        operations = re.findall(r"mul\(\d+,\d+\)", "".join(self.data))
+        return sum(int(x) * int(y) for op in operations for x, y in [op[4:-1].split(",")])
 
     def run_part2(self) -> int:
-        joined = "".join(self.data)
-        pattern = r"mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)"
-        instructions = re.findall(pattern, joined)
+        instructions = re.findall(r"mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", "".join(self.data))
         mul_enabled = True
         results = []
 
