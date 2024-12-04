@@ -1,10 +1,11 @@
 import abc
 import csv
 import time
+import tracemalloc
 from dataclasses import dataclass
 from datetime import datetime
 from statistics import mean, stdev
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from colorama import Fore, Style, init
 
@@ -21,11 +22,19 @@ class TimingStats:
 
 
 @dataclass
+class MemoryStats:
+    peak_memory: int
+    current_memory: int
+    memory_blocks: int
+
+
+@dataclass
 class Implementation:
     name: str
     func: Callable[[], int]
     enabled: bool = True
     timing_stats: Optional[TimingStats] = None
+    memory_stats: Optional[MemoryStats] = None
 
 
 class Problem(abc.ABC):
@@ -77,6 +86,30 @@ class Problem(abc.ABC):
         except Exception as e:
             print(f"{Fore.RED}✗ Error loading solutions: {e}{Style.RESET_ALL}")
 
+    def _measure_memory(self, func: Callable[[], int]) -> Tuple[int, MemoryStats]:
+        tracemalloc.start()
+        result = func()
+        snapshot = tracemalloc.take_snapshot()
+        stats = snapshot.statistics('lineno')
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        return result, MemoryStats(
+            peak_memory=peak,
+            current_memory=current,
+            memory_blocks=len(stats)
+        )
+
+    def _format_memory(self, bytes: int) -> str:
+        if bytes >= 1_000_000_000:
+            return f"{bytes / 1_000_000_000:.2f} GB"
+        elif bytes >= 1_000_000:
+            return f"{bytes / 1_000_000:.2f} MB"
+        elif bytes >= 1_000:
+            return f"{bytes / 1_000:.2f} KB"
+        else:
+            return f"{bytes} B"
+
     def _measure_performance(self, func: Callable[[], int], runs: int = 5) -> TimingStats:
         timings = []
         for _ in range(runs):
@@ -109,8 +142,11 @@ class Problem(abc.ABC):
             return
 
         try:
+            # Measure memory first in isolation
+            result, memory_stats = self._measure_memory(impl.func)
+
+            # Then measure timing
             timing_stats = self._measure_performance(impl.func)
-            actual = impl.func()
 
             timing_info = (
                 f"avg: {self._format_time(timing_stats.mean)} "
@@ -120,17 +156,25 @@ class Problem(abc.ABC):
                 f"runs: {timing_stats.runs})"
             )
 
+            memory_info = (
+                f"peak: {self._format_memory(memory_stats.peak_memory)} "
+                f"final: {self._format_memory(memory_stats.current_memory)} "
+                f"blocks: {memory_stats.memory_blocks}"
+            )
+
             if solution is None:
                 status = f"{Fore.BLUE}INFO{Style.RESET_ALL}"
-                result = f"Part {part} - {name}: {status} {actual}"
+                result_str = f"Part {part} - {name}: {status} {result}"
             else:
-                passed = actual == solution
+                passed = result == solution
                 status = f"{Fore.GREEN}✓ PASS{Style.RESET_ALL}" if passed else f"{Fore.RED}✗ FAIL{Style.RESET_ALL}"
-                result = f"Part {part} - {name}: {status} {actual}"
+                result_str = f"Part {part} - {name}: {status} {result}"
                 if not passed:
-                    result += f" {Fore.RED}(expected: {solution}){Style.RESET_ALL}"
+                    result_str += f" {Fore.RED}(expected: {solution}){Style.RESET_ALL}"
 
-            print(f"{result}\n{Fore.CYAN}  ⧗ {timing_info}{Style.RESET_ALL}\n")
+            print(f"{result_str}")
+            print(f"{Fore.CYAN}  ⧗ {timing_info}{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}  📊 {memory_info}{Style.RESET_ALL}\n")
 
         except Exception as e:
             print(f"{Fore.RED}Part {part} - {name}: ✗ Error occurred: {e}{Style.RESET_ALL}\n")
