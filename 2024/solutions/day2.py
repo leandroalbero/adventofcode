@@ -32,7 +32,7 @@ def is_valid_sequence_alt(sequence: list) -> bool:
 
 class Day2(Problem):
     def __init__(self, load_example: bool = False):
-        super().__init__(2024, 2, "Day 2", load_example)
+        super().__init__(2024, 2, "Red-Nosed Reports", load_example)
 
         self.register_implementation(1, "Original", self.part1_original)
         self.register_implementation(1, "List comprehension", self.part1_list_comp)

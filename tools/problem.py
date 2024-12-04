@@ -37,7 +37,7 @@ class Problem(abc.ABC):
         self.solutions: Dict[str, int] = {}
         self.implementations: Dict[int, Dict[str, Implementation]] = {1: {}, 2: {}}
 
-        print(f"{Fore.CYAN}Initializing {self.name} (Year {self.year}, Day {self.day}){Style.RESET_ALL}")
+        print(f"{Fore.CYAN}Initializing <<{self.name}>> (Year {self.year}, Day {self.day}){Style.RESET_ALL}")
         self._load_data(load_example)
         self._load_solutions(load_example)
 
@@ -138,7 +138,7 @@ class Problem(abc.ABC):
     def check_solutions(self, implementation_name: Optional[str] = None) -> None:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"\n{Fore.CYAN}={'=' * 80}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}Running solutions for Day {self.day}: {self.name} at {timestamp}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}Running solutions for Day {self.day}: <<{self.name}>> at {timestamp}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}={'=' * 80}{Style.RESET_ALL}\n")
 
         if not self.solutions and implementation_name is not None:

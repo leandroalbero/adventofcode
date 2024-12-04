@@ -6,7 +6,7 @@ from tools.problem import Problem
 
 class Day3(Problem):
     def __init__(self, load_example: bool = False):
-        super().__init__(2024, 3, "Day 3", load_example)
+        super().__init__(2024, 3, "Mull It Over", load_example)
 
         self.register_implementation(1, "Regex with list comp", self.part1_regex_listcomp)
         self.register_implementation(1, "Regex with map", self.part1_regex_map)

@@ -7,7 +7,7 @@ from tools.problem import Problem
 
 class Day1(Problem):
     def __init__(self, load_example: bool = False):
-        super().__init__(2024, 1, "Day 1", load_example)
+        super().__init__(2024, 1, "Historian Hysteria", load_example)
         self.register_implementation(1, "Initial", self.part1_initial)
         self.register_implementation(2, "Initial", self.part2_initial)
         self.register_implementation(1, "Using sets", self.part1_sets)
