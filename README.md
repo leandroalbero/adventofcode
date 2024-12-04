@@ -10,7 +10,7 @@ Or if you prefer to run one day you can just:
 ```shell
 python -m 2024.solutions.day1
 ```
-![img](media/solution-day1.png)
+![img](media/solutionday1.png)
 
 Linting code is easy, just run `make lint` to check all the code. It runs `ruff` and `mypy`
 ```shell
