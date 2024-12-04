@@ -50,7 +50,7 @@ class Problem(abc.ABC):
         file_path = f'{self.year}/data/day{self.day}{"-intro" if load_example else ""}'
         try:
             with open(file_path) as file:
-                self.data = file.readlines()
+                self.data = [line.rstrip() for line in file]
             print(f"{Fore.GREEN}✓ Loaded data from {file_path}{Style.RESET_ALL}")
         except FileNotFoundError:
             print(f"{Fore.RED}✗ Error: File {file_path} not found.{Style.RESET_ALL}")

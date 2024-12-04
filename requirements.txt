@@ -3,3 +3,4 @@ ruff
 mypy
 colorama
 types-colorama
+numpy
