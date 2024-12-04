@@ -1,5 +1,5 @@
 # Advent of code 🎄🧑‍💻
-This repository contains my solutions for the Advent of Code challenges.
+This repository contains my solutions for the [Advent of Code challenges](https://adventofcode.com/).
 
 Supports multiple implementations and checks the performance and memory cost of each one.
 
