@@ -9,7 +9,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from colorama import Fore, Style, init
 
-init()
+init()  # Initialize colorama
 
 
 @dataclass
@@ -35,6 +35,15 @@ class Implementation:
     enabled: bool = True
     timing_stats: Optional[TimingStats] = None
     memory_stats: Optional[MemoryStats] = None
+
+
+@dataclass
+class RunResult:
+    name: str
+    result: int
+    timing_stats: TimingStats
+    memory_stats: MemoryStats
+    passed: bool
 
 
 class Problem(abc.ABC):
@@ -136,48 +145,70 @@ class Problem(abc.ABC):
         else:
             return f"{ms * 1000000:.3f}ns"
 
-    def _run_implementation(self, part: int, name: str, impl: Implementation, solution: Optional[int] = None) -> None:
+    def _get_performance_indicators(self, results: List[RunResult]) -> Dict[str, List[str]]:
+        indicators: Dict[str, List[str]] = {}
+        if not results:
+            return {}
+
+        indicators = {result.name: [] for result in results}
+
+        # Find fastest implementation
+        fastest = min(results, key=lambda x: x.timing_stats.mean)
+        indicators[fastest.name].append(f"{Fore.YELLOW}⚡ FASTEST{Style.RESET_ALL}")
+
+        # Find most memory efficient implementation
+        most_efficient = min(results, key=lambda x: x.memory_stats.peak_memory)
+        indicators[most_efficient.name].append(f"{Fore.BLUE}💎 MEMORY{Style.RESET_ALL}")
+
+        return indicators
+
+    def _run_implementation(self, part: int, name: str, impl: Implementation, solution: Optional[int] = None) -> \
+    Optional[RunResult]:
         if not impl.enabled:
             print(f"{Fore.YELLOW}Part {part} - {name}: SKIPPED{Style.RESET_ALL}")
-            return
+            return None
 
         try:
             # Measure memory first in isolation
             result, memory_stats = self._measure_memory(impl.func)
-
             # Then measure timing
             timing_stats = self._measure_performance(impl.func)
 
-            timing_info = (
-                f"avg: {self._format_time(timing_stats.mean)} "
-                f"[±{self._format_time(timing_stats.std_dev)}] "
-                f"(min: {self._format_time(timing_stats.min_time)}, "
-                f"max: {self._format_time(timing_stats.max_time)}, "
-                f"runs: {timing_stats.runs})"
-            )
-
-            memory_info = (
-                f"peak: {self._format_memory(memory_stats.peak_memory)} "
-                f"final: {self._format_memory(memory_stats.current_memory)} "
-                f"blocks: {memory_stats.memory_blocks}"
-            )
-
-            if solution is None:
-                status = f"{Fore.BLUE}INFO{Style.RESET_ALL}"
-                result_str = f"Part {part} - {name}: {status} {result}"
-            else:
-                passed = result == solution
-                status = f"{Fore.GREEN}✓ PASS{Style.RESET_ALL}" if passed else f"{Fore.RED}✗ FAIL{Style.RESET_ALL}"
-                result_str = f"Part {part} - {name}: {status} {result}"
-                if not passed:
-                    result_str += f" {Fore.RED}(expected: {solution}){Style.RESET_ALL}"
-
-            print(f"{result_str}")
-            print(f"{Fore.CYAN}  ⧗ {timing_info}{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}  📊 {memory_info}{Style.RESET_ALL}\n")
+            passed = solution is None or result == solution
+            return RunResult(name, result, timing_stats, memory_stats, passed)
 
         except Exception as e:
             print(f"{Fore.RED}Part {part} - {name}: ✗ Error occurred: {e}{Style.RESET_ALL}\n")
+            return None
+
+    def _print_results(self, part: int, results: List[RunResult], indicators: Dict[str, List[str]],
+                       solution: Optional[int] = None) -> None:
+        for run in results:
+            timing_info = (
+                f"avg: {self._format_time(run.timing_stats.mean)} "
+                f"[±{self._format_time(run.timing_stats.std_dev)}] "
+                f"(min: {self._format_time(run.timing_stats.min_time)}, "
+                f"max: {self._format_time(run.timing_stats.max_time)}, "
+                f"runs: {run.timing_stats.runs})"
+            )
+
+            memory_info = (
+                f"peak: {self._format_memory(run.memory_stats.peak_memory)} "
+                f"final: {self._format_memory(run.memory_stats.current_memory)} "
+                f"blocks: {run.memory_stats.memory_blocks}"
+            )
+
+            status = f"{Fore.GREEN}✓ PASS{Style.RESET_ALL}" if run.passed else f"{Fore.RED}✗ FAIL{Style.RESET_ALL}"
+            perf_indicators = ' '.join(indicators.get(run.name, []))
+
+            result_str = f"Part {part} - {run.name}: {status} {run.result} {perf_indicators}"
+
+            if not run.passed and solution is not None:
+                result_str += f" {Fore.RED}(expected: {solution}){Style.RESET_ALL}"
+
+            print(result_str)
+            print(f"{Fore.CYAN}  ⧗ {timing_info}{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}  📊 {memory_info}{Style.RESET_ALL}\n")
 
     def check_solutions(self, implementation_name: Optional[str] = None) -> None:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -198,13 +229,21 @@ class Problem(abc.ABC):
 
             if implementation_name is not None:
                 if implementation_name in implementations:
-                    self._run_implementation(part, implementation_name,
-                                             implementations[implementation_name], solution)
+                    result = self._run_implementation(part, implementation_name,
+                                                      implementations[implementation_name], solution)
+                    if result:
+                        self._print_results(part, [result], self._get_performance_indicators([result]), solution)
                 else:
                     print(
                         f"{Fore.RED}Implementation '{implementation_name}' not found for part {part}{Style.RESET_ALL}\n")
             else:
+                results = []
                 for name, impl in implementations.items():
-                    self._run_implementation(part, name, impl, solution)
+                    result = self._run_implementation(part, name, impl, solution)
+                    if result:
+                        results.append(result)
+
+                indicators = self._get_performance_indicators(results)
+                self._print_results(part, results, indicators, solution)
 
         print(f"{Fore.CYAN}={'=' * 80}{Style.RESET_ALL}\n")
