@@ -79,12 +79,4 @@ class Day1(Problem):
 
 if __name__ == "__main__":
     day1 = Day1(load_example=False)
-
-    print("Running all implementations:")
-    day1.check_solutions()
-
-    print("\nRunning only Counter implementation for part 2:")
-    day1.check_solutions("Counter")
-
-    print("\nRunning all implementations:")
     day1.check_solutions()

@@ -59,24 +59,5 @@ class Day3(Problem):
 
 
 if __name__ == "__main__":
-
     day3 = Day3(load_example=False)
-
-    print("Running all implementations:")
-    day3.check_solutions()
-
-    print("\nRunning only iterator implementation for part 2:")
-    day3.check_solutions("Iterator based")
-
-    mul_pattern = re.compile(r"mul\((\d+),(\d+)\)")
-    day3.register_implementation(
-        1,
-        "Compiled regex",
-        lambda: sum(
-            int(x) * int(y)
-            for x, y in mul_pattern.findall("".join(day3.data))
-        )
-    )
-
-    print("\nRunning all implementations including runtime addition:")
     day3.check_solutions()

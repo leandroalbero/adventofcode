@@ -8,7 +8,6 @@ from typing import Callable, Dict, List, Optional
 
 from colorama import Fore, Style, init
 
-# Initialize colorama for cross-platform colored output
 init()
 
 
@@ -95,7 +94,6 @@ class Problem(abc.ABC):
         )
 
     def _format_time(self, ms: float) -> str:
-        """Format time in appropriate units (ns, µs, ms, or s)"""
         if ms >= 1000:
             return f"{ms / 1000:.3f}s"
         elif ms >= 1:
@@ -111,11 +109,9 @@ class Problem(abc.ABC):
             return
 
         try:
-            # Run implementation and measure performance
             timing_stats = self._measure_performance(impl.func)
-            actual = impl.func()  # One final run for the actual result
+            actual = impl.func()
 
-            # Prepare timing information
             timing_info = (
                 f"avg: {self._format_time(timing_stats.mean)} "
                 f"[±{self._format_time(timing_stats.std_dev)}] "
@@ -124,7 +120,6 @@ class Problem(abc.ABC):
                 f"runs: {timing_stats.runs})"
             )
 
-            # Determine result status and formatting
             if solution is None:
                 status = f"{Fore.BLUE}INFO{Style.RESET_ALL}"
                 result = f"Part {part} - {name}: {status} {actual}"
@@ -135,7 +130,6 @@ class Problem(abc.ABC):
                 if not passed:
                     result += f" {Fore.RED}(expected: {solution}){Style.RESET_ALL}"
 
-            # Print result with timing information
             print(f"{result}\n{Fore.CYAN}  ⧗ {timing_info}{Style.RESET_ALL}\n")
 
         except Exception as e:

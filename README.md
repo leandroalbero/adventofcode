@@ -41,6 +41,38 @@ Initializing Day 2 (Year 2024, Day 2)
 ... ommited rest of days
 ```
 
+Or if you prefer to run one day you can just:
+```shell
+python 2024/solutions/day1.py
+```
+And you will get the output of the solution for the different implementations:
+```shell
+Initializing Day 1 (Year 2024, Day 1)
+✓ Loaded data from 2024/data/day1
+✓ Loaded solutions from 2024/solutions.csv
+
+=================================================================================
+Running solutions for Day 1: Day 1 at 2024-12-04 01:56:41
+=================================================================================
+
+Part 1 - Initial: ✓ PASS 1938424
+  ⧗ avg: 594.242µs [±222.712µs] (min: 486.292µs, max: 992.458µs, runs: 5)
+
+Part 1 - Using sets: ✓ PASS 1938424
+  ⧗ avg: 445.525µs [±13.815µs] (min: 428.791µs, max: 460.167µs, runs: 5)
+
+Part 1 - Using zip_longest: ✓ PASS 1938424
+  ⧗ avg: 478.783µs [±20.271µs] (min: 461.875µs, max: 512.708µs, runs: 5)
+
+Part 2 - Initial: ✓ PASS 22014209
+  ⧗ avg: 8.366ms [±157.065µs] (min: 8.243ms, max: 8.543ms, runs: 5)
+
+Part 2 - Using Counter: ✓ PASS 22014209
+  ⧗ avg: 583.467µs [±36.802µs] (min: 527.000µs, max: 630.333µs, runs: 5)
+
+=================================================================================
+```
+
 Linting code is easy, just run `make lint` to check all the code. It runs `ruff` and `mypy`
 ```shell
 make lint
@@ -69,3 +101,8 @@ The repository is structured as follows:
     ├── helpers.py
     └── problem.py
 ```
+## Contributing
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+## License
+This project is licensed under the MIT License - see the license file for details.

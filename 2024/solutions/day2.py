@@ -99,22 +99,4 @@ class Day2(Problem):
 
 if __name__ == "__main__":
     day2 = Day2(load_example=False)
-
-    print("Running all implementations:")
-    day2.check_solutions()
-
-    print("\nRunning only 'Using any' implementation for part 2:")
-    day2.check_solutions("Using any")
-
-    day2.register_implementation(
-        1,
-        "Runtime slice validation",
-        lambda: sum(
-            is_valid_sequence(seq)
-            for seq in [[int(x) for x in line.strip().split()]
-                        for line in day2.data]
-        )
-    )
-
-    print("\nRunning all implementations including runtime addition:")
     day2.check_solutions()
