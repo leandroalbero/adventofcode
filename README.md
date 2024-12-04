@@ -1,4 +1,4 @@
-# Advent of code
+# Advent of code 🎄🧑‍💻
 This repository contains my solutions for the Advent of Code challenges.
 
 Supports multiple implementations and checks the performance of each one.
