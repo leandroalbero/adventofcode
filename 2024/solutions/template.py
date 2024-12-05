@@ -4,11 +4,13 @@ from tools.problem import Problem
 class Day1(Problem):
     def __init__(self, load_example: bool = False):
         super().__init__(2024, 1, "Day 1", load_example)
+        self.register_implementation(1, "Original", self.part1_original)
 
-    def run(self) -> int:
+
+    def part1_original(self) -> int:
         return 0
 
-    def run_part2(self) -> int:
+    def part2_original(self) -> int:
         return 0
 
 
